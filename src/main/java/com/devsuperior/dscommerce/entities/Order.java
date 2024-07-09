@@ -3,9 +3,11 @@ package com.devsuperior.dscommerce.entities;
 import jakarta.persistence.*;
 
 import java.time.Instant;
-//Mapear a classe ORDER
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
-//Vai customizar o nome da tabela do banco de dados
 @Table(name = "tb_order")
 public class Order {
     @Id
@@ -26,6 +28,12 @@ public class Order {
     //nome do atributo que está no payment e cascadeType.ALL para funcionar corretamente OneToOne
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private  Payment payment;
+
+    //Quando não tem repetição, usar Set e não list
+    //Id da classe OrderItem e order da classe OrderItemPK
+    @OneToMany(mappedBy = "id.order")
+    private Set<OrderItem> items = new HashSet<>();
+
 
     public Order(){
 
@@ -77,5 +85,14 @@ public class Order {
 
     public void setPayment(Payment payment) {
         this.payment = payment;
+    }
+
+    public Set<OrderItem> getItems() {
+        return items;
+    }
+
+    public List<Product> getProducts() {
+        // x é do OrdemItem, pega o Product e coloca em uma lista
+        return items.stream().map(x -> x.getProduct()).toList();
     }
 }
